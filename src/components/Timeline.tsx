@@ -1,11 +1,50 @@
-const timelineEvents = [
-  { year: "940 AD", title: "Migration from Yemen", description: "Bolewa people begin migration from Yemen to Lake Chad region", category: "migration" },
-  { year: "14th C", title: "Establishment of Birin Bolawa", description: "Founded as Islamic learning center in present-day Nafada", category: "establishment" },
-  { year: "1902-53", title: "Emir Abdulkadir Zailani", description: "4th Emir of Gombe, buried at Birin Bolawa", category: "royalty", emir: true },
-  { year: "2026", title: "Royal Visit", description: "11th Emir visits royal tomb", category: "modern", emir: true },
-]
+import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
+
+interface TimelineEvent {
+  id: string
+  year: string
+  title: string
+  description: string
+  category: string
+  emir_related: boolean
+  emir_name?: string
+}
 
 export default function Timeline() {
+  const [events, setEvents] = useState<TimelineEvent[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchTimeline()
+  }, [])
+
+  async function fetchTimeline() {
+    try {
+      const { data, error } = await supabase
+        .from('timeline_events')
+        .select('*')
+        .order('year', { ascending: true })
+      
+      if (error) throw error
+      setEvents(data || [])
+    } catch (error) {
+      console.error('Error fetching timeline:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="py-16 bg-sand/10">
+        <div className="container mx-auto px-4">
+          <p className="text-center text-brown">Loading timeline...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="py-16 bg-sand/10">
       <div className="container mx-auto px-4">
@@ -14,10 +53,10 @@ export default function Timeline() {
         </h2>
         
         <div className="max-w-3xl mx-auto">
-          {timelineEvents.map((event, i) => (
-            <div key={i} className="flex items-start mb-8">
+          {events.map((event) => (
+            <div key={event.id} className="flex items-start mb-8">
               <div className={`w-20 h-20 rounded-full flex items-center justify-center mr-6 ${
-                event.emir ? 'bg-gold text-green' : 'bg-green text-white'
+                event.emir_related ? 'bg-gold text-green' : 'bg-green text-white'
               }`}>
                 <span className="font-bold">{event.year}</span>
               </div>
@@ -25,11 +64,14 @@ export default function Timeline() {
               <div className="flex-1 pt-2">
                 <h3 className="text-xl font-bold text-brown">
                   {event.title}
-                  {event.emir && (
+                  {event.emir_related && (
                     <span className="ml-2 text-gold text-sm">👑 Royal</span>
                   )}
                 </h3>
                 <p className="text-brown/80">{event.description}</p>
+                {event.emir_name && (
+                  <p className="text-gold text-sm mt-1">Emir: {event.emir_name}</p>
+                )}
               </div>
             </div>
           ))}

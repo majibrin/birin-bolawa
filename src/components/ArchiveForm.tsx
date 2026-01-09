@@ -1,23 +1,59 @@
-import { Upload, User, Calendar, MapPin, Send } from 'lucide-react'
+import { Upload, User, Calendar, MapPin, Send, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { supabase } from '../lib/supabase'
 
 export default function ArchiveForm() {
   const [form, setForm] = useState({
-    name: '',
-    age: '',
-    relation: '',
-    contact: '',
+    contributor_name: '',
+    contributor_age: '',
+    contributor_relation: '',
+    contact_info: '',
     title: '',
     description: '',
     category: 'oral_history',
-    year: '',
-    location: ''
+    estimated_period: '',
+    location_details: ''
   })
+  
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    alert('Submission received! Our historians will review this.')
-    // In future: Connect to Supabase
+    setSubmitting(true)
+    
+    try {
+      const { error } = await supabase
+        .from('submissions')
+        .insert([{
+          ...form,
+          contributor_age: form.contributor_age ? parseInt(form.contributor_age) : null,
+          status: 'pending'
+        }])
+        .select()
+      
+      if (error) throw error
+      
+      setSubmitted(true)
+      setForm({
+        contributor_name: '',
+        contributor_age: '',
+        contributor_relation: '',
+        contact_info: '',
+        title: '',
+        description: '',
+        category: 'oral_history',
+        estimated_period: '',
+        location_details: ''
+      })
+      
+      setTimeout(() => setSubmitted(false), 5000)
+      
+    } catch (error: any) {
+      alert('Error submitting: ' + error.message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -35,8 +71,15 @@ export default function ArchiveForm() {
           </p>
         </div>
 
+        {submitted && (
+          <div className="mb-6 p-4 bg-green/10 border border-green rounded-lg">
+            <p className="text-green font-semibold text-center">
+              ✅ Submission received! Our heritage committee will review it.
+            </p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-6 md:p-8 shadow-xl">
-          {/* Personal Information */}
           <div className="mb-8">
             <h3 className="text-xl font-bold text-brown mb-4 flex items-center gap-2">
               <User className="w-5 h-5" />
@@ -48,10 +91,10 @@ export default function ArchiveForm() {
                 <input
                   type="text"
                   required
-                  className="w-full p-3 border border-sand rounded-lg focus:ring-2 focus:ring-gold focus:border-transparent"
+                  className="w-full p-3 border border-sand rounded-lg"
                   placeholder="Your name"
-                  value={form.name}
-                  onChange={(e) => setForm({...form, name: e.target.value})}
+                  value={form.contributor_name}
+                  onChange={(e) => setForm({...form, contributor_name: e.target.value})}
                 />
               </div>
               <div>
@@ -60,16 +103,16 @@ export default function ArchiveForm() {
                   type="number"
                   className="w-full p-3 border border-sand rounded-lg"
                   placeholder="Optional"
-                  value={form.age}
-                  onChange={(e) => setForm({...form, age: e.target.value})}
+                  value={form.contributor_age}
+                  onChange={(e) => setForm({...form, contributor_age: e.target.value})}
                 />
               </div>
               <div>
                 <label className="block text-brown/70 text-sm mb-2">Relation to Birin Bolawa</label>
                 <select 
                   className="w-full p-3 border border-sand rounded-lg"
-                  value={form.relation}
-                  onChange={(e) => setForm({...form, relation: e.target.value})}
+                  value={form.contributor_relation}
+                  onChange={(e) => setForm({...form, contributor_relation: e.target.value})}
                 >
                   <option value="">Select</option>
                   <option value="descendant">Descendant</option>
@@ -85,14 +128,13 @@ export default function ArchiveForm() {
                   type="text"
                   className="w-full p-3 border border-sand rounded-lg"
                   placeholder="For verification follow-up"
-                  value={form.contact}
-                  onChange={(e) => setForm({...form, contact: e.target.value})}
+                  value={form.contact_info}
+                  onChange={(e) => setForm({...form, contact_info: e.target.value})}
                 />
               </div>
             </div>
           </div>
 
-          {/* Submission Details */}
           <div className="mb-8">
             <h3 className="text-xl font-bold text-brown mb-4 flex items-center gap-2">
               <Upload className="w-5 h-5" />
@@ -153,8 +195,8 @@ export default function ArchiveForm() {
                     type="text"
                     className="w-full p-3 border border-sand rounded-lg"
                     placeholder="e.g., Early 1900s, 1950s, etc."
-                    value={form.year}
-                    onChange={(e) => setForm({...form, year: e.target.value})}
+                    value={form.estimated_period}
+                    onChange={(e) => setForm({...form, estimated_period: e.target.value})}
                   />
                 </div>
                 <div>
@@ -166,39 +208,31 @@ export default function ArchiveForm() {
                     type="text"
                     className="w-full p-3 border border-sand rounded-lg"
                     placeholder="Specific area in Birin Bolawa"
-                    value={form.location}
-                    onChange={(e) => setForm({...form, location: e.target.value})}
+                    value={form.location_details}
+                    onChange={(e) => setForm({...form, location_details: e.target.value})}
                   />
                 </div>
-              </div>
-
-              <div className="border-2 border-dashed border-sand rounded-lg p-8 text-center">
-                <Upload className="w-12 h-12 text-sand mx-auto mb-4" />
-                <p className="text-brown/70 mb-2">
-                  <span className="font-semibold">Upload photos or documents</span>
-                </p>
-                <p className="text-brown/50 text-sm mb-4">
-                  (Feature coming soon - currently accept text submissions)
-                </p>
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-sand/20 text-brown rounded-lg hover:bg-sand/30"
-                  disabled
-                >
-                  Select Files
-                </button>
               </div>
             </div>
           </div>
 
-          {/* Submit Button */}
           <div className="text-center">
             <button
               type="submit"
-              className="px-8 py-4 bg-green text-white font-bold rounded-lg hover:bg-green/90 transition flex items-center gap-2 mx-auto"
+              disabled={submitting}
+              className="px-8 py-4 bg-green text-white font-bold rounded-lg hover:bg-green/90 transition flex items-center gap-2 mx-auto disabled:opacity-50"
             >
-              <Send className="w-5 h-5" />
-              Submit for Verification
+              {submitting ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5" />
+                  Submit for Verification
+                </>
+              )}
             </button>
             <p className="text-brown/50 text-sm mt-4">
               All submissions are reviewed by Birin Bolawa heritage committee before being added to the archive.

@@ -18,7 +18,6 @@ const translations = {
 
 export default function LanguageToggle() {
   const [language, setLanguage] = useState<'en' | 'ha'>('en')
-  const t = translations[language]
 
   return (
     <div className="fixed top-4 right-4 z-50">

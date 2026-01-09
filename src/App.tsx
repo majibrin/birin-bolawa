@@ -3,12 +3,22 @@ import Gallery from './components/Gallery'
 import News from './components/News'
 import LanguageToggle from './components/LanguageToggle'
 import ArchiveForm from './components/ArchiveForm'
+import { Shield } from 'lucide-react'
 
 function App() {
   return (
     <div>
       {/* Language Toggle */}
       <LanguageToggle />
+      
+      {/* Admin Link (remove in production) */}
+      <a 
+        href="/admin" 
+        className="fixed top-4 left-4 z-50 bg-gold text-green px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-gold/90"
+      >
+        <Shield className="w-4 h-4" />
+        Admin
+      </a>
       
       {/* Hero Section */}
       <div className="min-h-screen bg-gradient-to-b from-green to-brown">
