@@ -1,0 +1,6 @@
+public/images/
+├── mosque.jpg          # Jumu'ah Mosque
+├── tomb.jpg           # Emir's tomb
+├── settlement.jpg     # Ancient settlement
+├── emir-visit.jpg     # 2026 royal visit
+└── logo.png          # Site logo
