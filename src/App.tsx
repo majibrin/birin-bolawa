@@ -2,6 +2,7 @@ import Timeline from './components/Timeline'
 import Gallery from './components/Gallery'
 import News from './components/News'
 import LanguageToggle from './components/LanguageToggle'
+import ArchiveForm from './components/ArchiveForm'
 
 function App() {
   return (
@@ -37,6 +38,9 @@ function App() {
       
       {/* Community Hub News */}
       <News />
+      
+      {/* Secure Archive Form */}
+      <ArchiveForm />
     </div>
   )
 }
