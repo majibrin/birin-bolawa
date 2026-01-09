@@ -114,7 +114,7 @@ export default function AdminPanel() {
   }
 
   const submissions = view === 'pending' ? pendingSubmissions : verifiedSubmissions
-  const title = view === 'pending' ? 'Pending Submissions' : 'Verified Submissions'
+  
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
