@@ -3,6 +3,7 @@ import Gallery from './components/Gallery'
 import News from './components/News'
 import LanguageToggle from './components/LanguageToggle'
 import ArchiveForm from './components/ArchiveForm'
+import VerifiedArchive from './components/VerifiedArchive'
 import { Shield } from 'lucide-react'
 
 function App() {
@@ -49,7 +50,10 @@ function App() {
       {/* Community Hub News */}
       <News />
       
-      {/* Secure Archive Form */}
+      {/* Verified Archive (Public can see verified submissions) */}
+      <VerifiedArchive />
+      
+      {/* Secure Archive Form (for submitting new content) */}
       <ArchiveForm />
     </div>
   )
